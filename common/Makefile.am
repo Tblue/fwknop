@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LIBRARIES         	= libfko_util.a
 
-libfko_util_source_files 	= strlcpy.c strlcat.c fko_util.c fko_util.h
+libfko_util_source_files 	= strlcpy.c strlcat.c malloc.c fko_util.c fko_util.h
 
 if WANT_C_UNIT_TESTS
 libfko_util_source_files += cunit_common.c cunit_common.h
