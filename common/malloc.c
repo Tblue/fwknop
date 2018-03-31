@@ -1,26 +1,32 @@
-/* Support functions potentially required by the autoconf macros
- * AC_FUNC_MALLOC and AC_FUNC_REALLOC.
+/**
+ * \file common/malloc.c
  *
- * POSIX does not clearly define what happens when one calls malloc(0)
- * or realloc(ptr, 0):
+ * \brief Support functions potentially required by the autoconf macros
+ *        \c AC_FUNC_MALLOC and \c AC_FUNC_REALLOC.
  *
- *   "If size is 0, either a null pointer or a unique pointer that can
- *    be successfully passed to free() shall be returned."
+ * POSIX does not clearly define what happens when one calls
+ * \c malloc(0) or \c realloc(ptr, 0):
  *
- * Autoconf expects the latter behavior: If size is 0, then a valid
- * pointer should be returned.
+ *   <em>
+ *   If \c size is 0, either a null pointer or a unique pointer
+ *   that can be successfully passed to \c free() shall be returned.
+ *   </em>
  *
- * If Autoconf cannot determine that malloc() and realloc() behave as
- * expected (e. g. when we are cross-compiling), then it defines
- * "malloc" to "rpl_malloc" (as well as HAVE_MALLOC to 0) and "realloc"
- * to "rpl_realloc" (as well as HAVE_REALLOC to 0), relying on the
- * project to provide conforming implementations of rpl_malloc() and
- * rpl_realloc() that exhibit the expected behavior.
+ * Autoconf expects the latter behavior: If \c size is 0, then a
+ * valid pointer should be returned.
  *
- * Thus, we need to provide implementations of rpl_malloc() and
- * rpl_realloc() that return valid pointers even if called with a memory
- * size of zero (they can still return NULL, but only if the allocation
- * actually failed).
+ * If Autoconf cannot determine that \c malloc() and \c realloc()
+ * behave as expected (e. g. when we are cross-compiling), then it
+ * defines \c malloc to \c rpl_malloc (as well as \c HAVE_MALLOC to
+ * 0) and \c realloc to \c rpl_realloc (as well as \c HAVE_REALLOC to
+ * 0), relying on the project to provide conforming implementations
+ * of \c rpl_malloc() and \c rpl_realloc() that exhibit the expected
+ * behavior.
+ *
+ * Thus, we need to provide implementations of \c rpl_malloc() and
+ * \c rpl_realloc() that return valid pointers even if called with a
+ * memory size of 0 (they can still return \c NULL, but only if the
+ * allocation actually failed).
  */
 
 #if HAVE_CONFIG_H
@@ -38,32 +44,40 @@
 
 #ifdef HAVE_MALLOC
 #  if ! HAVE_MALLOC
-/* Like malloc(), but rpl_malloc(0) will (try to) return a valid pointer
- * that can be passed to free().
+/**
+ * \brief \c malloc() replacement that accepts a \c size of 0.
  *
- * That is, rpl_malloc() will only return NULL if the actual memory
- * allocation fails, not because of argument errors.
+ * This is like \c malloc(), but \c rpl_malloc(0) will (try to) return a
+ * valid pointer that can be passed to \c free().
+ *
+ * \returns A pointer to the allocated memory, or \c NULL if (and only
+ *          if) the actual memory allocation fails (i. e. \b not because
+ *          of argument errors).
  */
 void *
-rpl_malloc(size_t n)
+rpl_malloc(size_t size)
 {
-    return malloc(0 == n ? 1 : n);
+    return malloc(0 == size ? 1 : size);
 }
 #  endif /* ! HAVE_MALLOC */
 #endif /* ifdef HAVE_MALLOC */
 
 #ifdef HAVE_REALLOC
 #  if ! HAVE_REALLOC
-/* Like realloc(), but rpl_realloc(ptr, 0) will (try to) return a valid
- * pointer that can be passed to free().
+/**
+ * \brief \c realloc() replacement that accepts a \c size of 0.
  *
- * That is, rpl_realloc() will only return NULL if the actual memory
- * allocation fails, not because of argument errors.
+ * This is like \c realloc(), but \c rpl_realloc(ptr, 0) will (try to)
+ * return a valid pointer that can be passed to \c free().
+ *
+ * \returns A pointer to the allocated memory, or \c NULL if (and only
+ *          if) the actual memory allocation fails (i. e. \b not because
+ *          of argument errors).
  */
 void *
-rpl_realloc(void *mem, size_t n)
+rpl_realloc(void *ptr, size_t size)
 {
-    return realloc(mem, 0 == n ? 1 : n);
+    return realloc(ptr, 0 == size ? 1 : size);
 }
 #  endif /* ! HAVE_REALLOC */
 #endif /* ifdef HAVE_REALLOC */
